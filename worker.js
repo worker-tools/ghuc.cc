@@ -17,7 +17,7 @@ async function handle(ev) {
   let match = pattern.exec(request.url)
   if (match) {
     const { pathname: { groups: { org, repo, version, path } } } = match;
-    console.log(org, repo, version, path)
+    // console.log(org, repo, version, path)
     // TODO: support latest, next, etc..
     const branchOrTag = version && version.match(/^\d/) ? `v${version}` : version;
     // const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`, request)
@@ -28,14 +28,14 @@ async function handle(ev) {
   match = patternNoVersion.exec(request.url)
   if (match) {
     const { pathname: { groups: { org, repo, path } } } = match;
-    console.log(org, repo, path)
+    // console.log(org, repo, path)
     const gh = await fetch(`https://api.github.com/repos/${org}/${repo}`, {
       headers: { 
         'Accept': 'application/vnd.github.v3+json', 
         'User-Agent': navigator.userAgent, 
       },
     })
-    console.log(gh.status)
+    // console.log(gh.status)
     if (gh.ok) {
       const { default_branch: defaultBranch } = await gh.json();
       // const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${defaultBranch}/${path}`, request)
