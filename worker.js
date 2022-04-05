@@ -40,8 +40,10 @@ async function handle(ev) {
       const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${defaultBranch}/${path}`, request)
       if (resp.status === 200) ev.waitUntil(cache.put(request.url, resp.clone()))
       return resp;
+    } else {
+      return gh;
     }
   }
 
-  return badRequest("Needs to match pattern '/:org/:repo{@:version}?/:path'")
+  return badRequest("Needs to match pattern '/:org/:repo@:version/:path'")
 }
