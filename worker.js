@@ -22,7 +22,7 @@ async function handle(ev) {
     const branchOrTag = version && version.match(/^\d/) ? `v${version}` : version;
     // const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`, request)
     // if (resp.status === 200) ev.waitUntil(cache.put(request.url, resp.clone()))
-    return permanentRedirect(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`);
+    return temporaryRedirect(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`);
   }
 
   match = patternNoVersion.exec(request.url)
