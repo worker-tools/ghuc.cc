@@ -1,0 +1,5 @@
+{
+  "compilerOptions": {
+    "types": ["@cloudflare/workers-types"]
+  }
+}

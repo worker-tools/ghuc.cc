@@ -1,0 +1,19 @@
+{
+  "name": "ghr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "worker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@worker-tools/response-creators": "^1.2.0-pre.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.4.0",
+    "esbuild": "^0.14.31",
+    "miniflare": "^2.4.0"
+  }
+}
