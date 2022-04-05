@@ -1,4 +1,4 @@
-import { badRequest } from '@worker-tools/response-creators';
+import { badRequest, methodNotAllowed } from '@worker-tools/response-creators';
 
 self.addEventListener('fetch', ev => ev.respondWith(handle(ev)))
 
@@ -8,6 +8,8 @@ const patternNoVersion = new URLPattern({ pathname: '/:org/:repo/:path' });
 /** @param {FetchEvent} ev */
 async function handle(ev) {
   const { request } = ev;
+  if (request.method !== 'GET') return methodNotAllowed();
+
   const cache = caches.default;
   const maybe = await cache.match(request.url);
   if (maybe) return maybe;
@@ -17,7 +19,7 @@ async function handle(ev) {
     const { pathname: { groups: { org, repo, version, path } } } = match;
     // console.log(org, repo, version, path)
     const branchOrTag = version && version.match(/^\d/) ? `v${version}` : version;
-    const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`)
+    const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`, request)
     if (resp.status === 200) ev.waitUntil(cache.put(request.url, resp.clone()))
     return resp;
   }
@@ -35,7 +37,7 @@ async function handle(ev) {
     // console.log(gh.status)
     if (gh.ok) {
       const { default_branch: defaultBranch } = await gh.json();
-      const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${defaultBranch}/${path}`)
+      const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${defaultBranch}/${path}`, request)
       if (resp.status === 200) ev.waitUntil(cache.put(request.url, resp.clone()))
       return resp;
     }
