@@ -2,8 +2,8 @@ import { badRequest, methodNotAllowed, temporaryRedirect, permanentRedirect } fr
 
 self.addEventListener('fetch', ev => ev.respondWith(handle(ev)))
 
-const pattern = new URLPattern({ pathname: '/:org/:repo@:version/:path' });
-const patternNoVersion = new URLPattern({ pathname: '/:org/:repo/:path' });
+const pattern = new URLPattern({ pathname: '/:org/:repo@:version/*' });
+const patternNoVersion = new URLPattern({ pathname: '/:org/:repo/*' });
 
 /** @param {FetchEvent} ev */
 async function handle(ev) {
@@ -16,7 +16,7 @@ async function handle(ev) {
 
   let match = pattern.exec(request.url)
   if (match) {
-    const { pathname: { groups: { org, repo, version, path } } } = match;
+    const { pathname: { groups: { org, repo, version, '0': path } } } = match;
     // console.log(org, repo, version, path)
     // TODO: support latest, next, etc..
     const branchOrTag = version && version.match(/^\d/) ? `v${version}` : version;
@@ -27,7 +27,7 @@ async function handle(ev) {
 
   match = patternNoVersion.exec(request.url)
   if (match) {
-    const { pathname: { groups: { org, repo, path } } } = match;
+    const { pathname: { groups: { org, repo, '0': path } } } = match;
     // console.log(org, repo, path)
     const gh = await fetch(`https://api.github.com/repos/${org}/${repo}`, {
       headers: { 
