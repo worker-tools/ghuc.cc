@@ -19,7 +19,7 @@ async function handle(ev) {
     const { pathname: { groups: { org, repo, version, '0': path } } } = match;
     // console.log(org, repo, version, path)
     // TODO: support latest, next, etc..
-    const branchOrTag = version && version.match(/^\d/) ? `v${version}` : version;
+    const branchOrTag = version && version.match(/^\d+\.\d+\.\d+/) ? `v${version}` : version;
     // const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`, request)
     // if (resp.status === 200) ev.waitUntil(cache.put(request.url, resp.clone()))
     return temporaryRedirect(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`);
