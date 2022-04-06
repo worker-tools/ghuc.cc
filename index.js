@@ -1,21 +1,8 @@
-import { badRequest, methodNotAllowed, temporaryRedirect, permanentRedirect } from '@worker-tools/response-creators';
+import { badRequest, methodNotAllowed, temporaryRedirect, permanentRedirect, notFound } from '@worker-tools/response-creators';
+import { WorkerRouter } from '@worker-tools/router';
 
-self.addEventListener('fetch', ev => ev.respondWith(handle(ev)))
-
-const pattern = new URLPattern({ pathname: '/:org/:repo@:version/*' });
-const patternNoVersion = new URLPattern({ pathname: '/:org/:repo/*' });
-
-/** @param {FetchEvent} ev */
-async function handle(ev) {
-  const { request } = ev;
-  if (request.method !== 'GET') return methodNotAllowed();
-
-  // const cache = caches.default;
-  // const maybe = await cache.match(request.url);
-  // if (maybe) return maybe;
-
-  let match = pattern.exec(request.url)
-  if (match) {
+const router = new WorkerRouter()
+  .get('/:org/:repo@:version/*', (_request, { match }) => {
     const { pathname: { groups: { org, repo, version, '0': path } } } = match;
     // console.log(org, repo, version, path)
     // TODO: support latest, next, etc..
@@ -23,12 +10,11 @@ async function handle(ev) {
     // const resp = await fetch(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`, request)
     // if (resp.status === 200) ev.waitUntil(cache.put(request.url, resp.clone()))
     return temporaryRedirect(`https://raw.githubusercontent.com/${org}/${repo}/${branchOrTag}/${path}`);
-  }
-
-  match = patternNoVersion.exec(request.url)
-  if (match) {
+  })
+  .get('/:org/:repo/*', async (_request, { match }) => {
     const { pathname: { groups: { org, repo, '0': path } } } = match;
     // console.log(org, repo, path)
+    // TODO: store default_branch in KV to reduce nr of api reqs?
     const gh = await fetch(`https://api.github.com/repos/${org}/${repo}`, {
       headers: { 
         'Accept': 'application/vnd.github.v3+json', 
@@ -44,7 +30,9 @@ async function handle(ev) {
     } else {
       return gh;
     }
-  }
+  })
+  .any('*', () => {
+    return badRequest("Needs to match pattern '/:org/:repo@:version/:path'")
+  })
 
-  return badRequest("Needs to match pattern '/:org/:repo@:version/:path'")
-}
+self.addEventListener('fetch', router)

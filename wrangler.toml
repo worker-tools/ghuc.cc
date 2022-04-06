@@ -8,6 +8,6 @@ route = "https://ghuc.cc/*"
 zone_id = "0e1fb3b85f23850502940b9ef6fbb0d3"
 
 # [build]
-#   command = "pnpx esbuild worker.js --bundle --target=es2021 --outfile=worker/script.js --define:DEBUG=false"
+#   command = "pnpx esbuild index.js --bundle --target=es2021 --outfile=worker/script.js --define:DEBUG=false"
 #   [build.upload]
 #     format = "service-worker"
