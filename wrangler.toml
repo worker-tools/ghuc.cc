@@ -7,6 +7,8 @@ compatibility_date = "2022-04-05"
 route = "https://ghuc.cc/*"
 zone_id = "0e1fb3b85f23850502940b9ef6fbb0d3"
 
+webpack_config = "webpack.config.js"
+
 # [build]
 #   command = "pnpx esbuild index.js --bundle --target=es2021 --outfile=worker/script.js --define:DEBUG=false"
 #   [build.upload]

@@ -9,12 +9,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@worker-tools/html": "^2.0.0-pre.6",
+    "@worker-tools/middleware": "^0.1.0-pre.11",
     "@worker-tools/response-creators": "^1.2.0-pre.3",
-    "@worker-tools/router": "^0.1.0-pre.10"
+    "@worker-tools/router": "^0.1.0-pre.13",
+    "urlpattern-polyfill": "^4.0.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.4.0",
-    "esbuild": "^0.14.32",
+    "esbuild": "^0.14.34",
     "miniflare": "^2.4.0"
   }
 }
