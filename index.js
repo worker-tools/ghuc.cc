@@ -41,10 +41,11 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
   return new HTMLResponse(layout('ghuc.cc', html`<div>
   <script>
     (async () => {
-        const gh = await fetch('https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}')
-        if (gh.ok) document.getElementById('code').textContent = await gh.text();
-        else document.getElementById('code').textContent = 'Response from GitHub not ok: ' + gh.status;
-      })()
+      document.getElementById('code').textContent = 'Fetching...'
+      const gh = await fetch('https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}')
+      if (gh.ok) document.getElementById('code').textContent = await gh.text();
+      else document.getElementById('code').textContent = 'Response from GitHub not ok: ' + gh.status;
+    })()
   </script>
   <!-- <a href="${url}">${new URL(new URL(url).pathname, 'https://ghuc.cc')}</a><br> -->
   <div style="display:flex; justify-content:space-between">
@@ -56,7 +57,7 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
     </div>
   </div>
   <hr />
-  <pre><code id="code">Fetching...</code></pre>
+  <pre><code id="code"><noscript>JS required to load remote content.</noscript></code></pre>
 </div>`))
 }
 
