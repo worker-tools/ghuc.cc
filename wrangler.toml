@@ -3,11 +3,19 @@ type = "webpack"
 account_id = "efb289061241436254219b424fcea4cf"
 workers_dev = true
 compatibility_date = "2022-04-05"
+compatibility_flags = ["url_standard"]
 
 route = "https://ghuc.cc/*"
 zone_id = "0e1fb3b85f23850502940b9ef6fbb0d3"
 
-webpack_config = "webpack.config.js"
+# webpack_config = "webpack.config.js"
+
+kv_namespaces = [ 
+  { binding = "KV_NAMESPACE", id = "febc7afc2ae9419eb7d8612d71b9e143", preview_id = "0abdd2a3299247039df88ec25885d96c" }
+]
+
+[vars]
+  CF_STORAGE_AREA__DEFAULT_KV_NAMESPACE = "KV_NAMESPACE"
 
 # [build]
 #   command = "pnpx esbuild index.js --bundle --target=es2021 --outfile=worker/script.js --define:DEBUG=false"

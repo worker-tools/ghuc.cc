@@ -9,10 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@worker-tools/cloudflare-kv-storage": "^0.8.0",
     "@worker-tools/html": "^2.0.0-pre.6",
     "@worker-tools/middleware": "^0.1.0-pre.11",
     "@worker-tools/response-creators": "^1.2.0-pre.3",
-    "@worker-tools/router": "^0.1.0-pre.13",
+    "@worker-tools/router": "^0.1.0-pre.14",
     "urlpattern-polyfill": "^4.0.3"
   },
   "devDependencies": {

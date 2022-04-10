@@ -2,19 +2,21 @@ lockfileVersion: 5.3
 
 specifiers:
   '@cloudflare/workers-types': ^3.4.0
+  '@worker-tools/cloudflare-kv-storage': ^0.8.0
   '@worker-tools/html': ^2.0.0-pre.6
   '@worker-tools/middleware': ^0.1.0-pre.11
   '@worker-tools/response-creators': ^1.2.0-pre.3
-  '@worker-tools/router': ^0.1.0-pre.13
+  '@worker-tools/router': ^0.1.0-pre.14
   esbuild: ^0.14.34
   miniflare: ^2.4.0
   urlpattern-polyfill: ^4.0.3
 
 dependencies:
+  '@worker-tools/cloudflare-kv-storage': 0.8.0
   '@worker-tools/html': 2.0.0-pre.6
   '@worker-tools/middleware': 0.1.0-pre.11
   '@worker-tools/response-creators': 1.2.0-pre.3
-  '@worker-tools/router': 0.1.0-pre.13
+  '@worker-tools/router': 0.1.0-pre.14
   urlpattern-polyfill: 4.0.3
 
 devDependencies:
@@ -23,6 +25,10 @@ devDependencies:
   miniflare: 2.4.0
 
 packages:
+
+  /@cloudflare/workers-types/2.2.2:
+    resolution: {integrity: sha512-kaMn2rueJ0PL1TYVGknTCh0X0x0d9G+FNXAFep7/4uqecEZoQb/63o6rOmMuiqI09zLuHV6xhKRXinokV/MY9A==}
+    dev: false
 
   /@cloudflare/workers-types/3.4.0:
     resolution: {integrity: sha512-i/3czUrt6YqbOWl44OtIqd0cSZvEVXp/1oD/DZylC4PHZL3q/BhbamdEVeVhc/HPk4iD/7MZ2HGaIMO4Z4b12A==}
@@ -180,6 +186,20 @@ packages:
     resolution: {integrity: sha512-TgfOX+mGY/NyNxJLIbDWrO9DjGoVSW9+aB8H2yy1fy32jsvxijhmyJI9fDFgvz3YP4lvJaq9DzdR/M1bOgVc9g==}
     dev: true
 
+  /@worker-tools/cloudflare-kv-storage/0.8.0:
+    resolution: {integrity: sha512-fIwkOH3wOCGR7wVL96MWyxqSrP0dU8P/gELKpXDkOZQ6rMoeoHrFQVW19TFX8GfWBoZIZDYr42vF9JyuXvsfbg==}
+    dependencies:
+      '@cloudflare/workers-types': 2.2.2
+      idb-key-to-string: 0.2.0
+      kv-storage-interface: 0.2.0
+      msgpackr: 1.5.5
+      typeson: 5.18.2
+      typeson-registry: 1.0.0-alpha.39
+    transitivePeerDependencies:
+      - core-js-bundle
+      - regenerator-runtime
+    dev: false
+
   /@worker-tools/encrypted-cookie-store/0.3.0-pre.4:
     resolution: {integrity: sha512-0CifH775j6enGR+UFQSazpFbTCNueH6HOniX07JcieF4k6RQ8knW2IAoK4Z/q1oxDkJVYhQ0+w80zwFitZR7fg==}
     dependencies:
@@ -233,8 +253,8 @@ packages:
     resolution: {integrity: sha512-ypKSfu35HU7tb9LmiqA23hNVp892HZ6yLqBnOs+uMABUba+Z3OCTsXlPON73zaC+ubVuI+TRoU7ofDxlmeyC4A==}
     dev: false
 
-  /@worker-tools/router/0.1.0-pre.13:
-    resolution: {integrity: sha512-To6izqLbehXa+7RQYSLofKCqqlzYI/TbZ9dYsX+eZ+I3dJ6NzOAdt1A4wICqy4fNzLB6+CZSxm//1qkHEX4mmg==}
+  /@worker-tools/router/0.1.0-pre.14:
+    resolution: {integrity: sha512-sXYHHp+AC27PYTVNkK91uA0s7BHtfUOXlpq9JPU1RxmBQSTqXA03VgmbjRDhGoVZp8467cdlHmF6QDMFudb/Tw==}
     dependencies:
       '@worker-tools/middleware': 0.1.0-pre.11
       '@worker-tools/response-creators': 1.2.0-pre.3
@@ -248,6 +268,15 @@ packages:
       cookie-store-interface: 0.1.1
       typed-array-utils: 0.2.2
       uuid-class: 0.13.0-alpha.0
+    dev: false
+
+  /base64-arraybuffer-es6/0.7.0:
+    resolution: {integrity: sha512-ESyU/U1CFZDJUdr+neHRhNozeCv72Y7Vm0m1DCbjX3KBjT6eYocvAJlSk6+8+HkVwXlT1FNxhGW6q3UKAlCvvw==}
+    engines: {node: '>=6.0.0'}
+    dev: false
+
+  /base64-encoding/0.14.3:
+    resolution: {integrity: sha512-/MvpDArLNYsPwwDAfDadL5OMZjWHlPIdsA8iZWN2A/p+ml6f3CtIODBxH21PdtTirKGfjjjp2CGpfGvdyGQJiQ==}
     dev: false
 
   /base64-encoding/0.15.0-alpha.0:
@@ -506,6 +535,13 @@ packages:
     resolution: {integrity: sha512-carPklcUh7ROWRK7Cv27RPtdhYhUsela/ue5/jKzjegVvXDqM2ILE9Q2BGn9JZJh1g87cp56su/FgQSzcWS8cQ==}
     dev: true
 
+  /idb-key-to-string/0.2.0:
+    resolution: {integrity: sha512-ZrbOyJyLjCPFlullZharfgyGDb6w6lnVJwFE/6BvVHaNLxoM6ELxrxVozdjLP5VmSq9mKjP6qXDkeV/ht1lu1A==}
+    dependencies:
+      base64-encoding: 0.14.3
+      kv-storage-interface: 0.2.0
+    dev: false
+
   /ignore/5.2.0:
     resolution: {integrity: sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==}
     engines: {node: '>= 4'}
@@ -518,6 +554,10 @@ packages:
 
   /kv-storage-interface/0.2.0:
     resolution: {integrity: sha512-W1QWU/6yj7j7pXRoXkOwv/QEieiaBHcEEeYSPY6D7w7mgwx2NuC0FRS8D6/gSKyfharRXR01aLiEkKRjZMGCOQ==}
+    dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: false
 
   /miniflare/2.4.0:
@@ -648,6 +688,11 @@ packages:
     dev: false
     optional: true
 
+  /punycode/2.1.1:
+    resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}
+    engines: {node: '>=6'}
+    dev: false
+
   /selfsigned/2.0.1:
     resolution: {integrity: sha512-LmME957M1zOsUhG+67rAjKfiWFox3SBxE/yymatMZsAx+oMrJ0YQ8AToOnyCm7xbeg2ep37IHLxdu0o2MavQOQ==}
     engines: {node: '>=10'}
@@ -685,6 +730,13 @@ packages:
     engines: {node: '>=0.8.0'}
     dev: true
 
+  /tr46/2.1.0:
+    resolution: {integrity: sha512-15Ih7phfcdP5YxqiB+iDtLoaTz4Nd35+IiAv0kQ5FNKHzXgdWqPoTIqEDDJmXceQt4JZk6lVPT8lnDlPpGDppw==}
+    engines: {node: '>=8'}
+    dependencies:
+      punycode: 2.1.1
+    dev: false
+
   /ts-functional-pipe/3.1.2:
     resolution: {integrity: sha512-3Zmj39yTFtzrwrLn5ifQKHmUQQ6uh7+NUVUZ2hsBgeF2JzwkmlVErbxoktNA20E4lmbEJK8NEoEZOrETLRiWzw==}
     engines: {node: '>=6.0.0'}
@@ -698,6 +750,28 @@ packages:
 
   /typed-array-utils/0.2.2:
     resolution: {integrity: sha512-xq2oNAgDAZKsmzu7KQXDe9cLKiOYZn+6h5VMzcg1BmiiGPlCxMu1mh+tiWzydfIFGdNBs8/WS78ZPkTdHhnxlg==}
+    dev: false
+
+  /typeson-registry/1.0.0-alpha.39:
+    resolution: {integrity: sha512-NeGDEquhw+yfwNhguLPcZ9Oj0fzbADiX4R0WxvoY8nGhy98IbzQy1sezjoEFWOywOboj/DWehI+/aUlRVrJnnw==}
+    engines: {node: '>=10.0.0'}
+    dependencies:
+      base64-arraybuffer-es6: 0.7.0
+      typeson: 6.1.0
+      whatwg-url: 8.7.0
+    dev: false
+
+  /typeson/5.18.2:
+    resolution: {integrity: sha512-Vetd+OGX05P4qHyHiSLdHZ5Z5GuQDrHHwSdjkqho9NSCYVSLSfRMjklD/unpHH8tXBR9Z/R05rwJSuMpMFrdsw==}
+    engines: {node: '>=0.1.14'}
+    peerDependencies:
+      core-js-bundle: ^3.6.4
+      regenerator-runtime: ^0.13.3
+    dev: false
+
+  /typeson/6.1.0:
+    resolution: {integrity: sha512-6FTtyGr8ldU0pfbvW/eOZrEtEkczHRUtduBnA90Jh9kMPCiFNnXIon3vF41N0S4tV1HHQt4Hk1j4srpESziCaA==}
+    engines: {node: '>=0.1.14'}
     dev: false
 
   /undici/4.13.0:
@@ -715,10 +789,24 @@ packages:
       typed-array-utils: 0.2.2
     dev: false
 
+  /webidl-conversions/6.1.0:
+    resolution: {integrity: sha512-qBIvFLGiBpLjfwmYAaHPXsn+ho5xZnGvyGvsarywGNc8VyQJUMHJ8OBKGGrPER0okBeMDaan4mNBlgBROxuI8w==}
+    engines: {node: '>=10.4'}
+    dev: false
+
   /whatwg-stream-to-async-iter/0.4.3:
     resolution: {integrity: sha512-ny/kybzAItug2ROJXudRXkWnWE5pUjiab4Dm+Dn/pjHT+O9OmuZm9BnGu7hvqlCvBtW5lCYB0DnFEI3tmQj/9Q==}
     dependencies:
       tslib: 2.3.1
+    dev: false
+
+  /whatwg-url/8.7.0:
+    resolution: {integrity: sha512-gAojqb/m9Q8a5IV96E3fHJM70AzCkgt4uXYX2O7EmuyOnLrViCQlsEBmF9UQIu3/aeAIp2U17rtbpZWNntQqdg==}
+    engines: {node: '>=10'}
+    dependencies:
+      lodash: 4.17.21
+      tr46: 2.1.0
+      webidl-conversions: 6.1.0
     dev: false
 
   /ws/8.5.0:
