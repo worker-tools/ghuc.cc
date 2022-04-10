@@ -39,14 +39,6 @@ const layout = (title, content) => html`<html>
 
 export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
   return new HTMLResponse(layout('ghuc.cc', html`<div>
-  <script>
-    (async () => {
-      document.getElementById('code').textContent = 'Fetching...'
-      const gh = await fetch('https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}')
-      if (gh.ok) document.getElementById('code').textContent = await gh.text();
-      else document.getElementById('code').textContent = 'Response from GitHub not ok: ' + gh.status;
-    })()
-  </script>
   <!-- <a href="${url}">${new URL(new URL(url).pathname, 'https://ghuc.cc')}</a><br> -->
   <div style="display:flex; justify-content:space-between">
     Points to: /${user}/${repo}/${branchOrTag}/${path}
@@ -58,6 +50,14 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
   </div>
   <hr />
   <pre><code id="code"><noscript>JS required to load remote content.</noscript></code></pre>
+  <script>
+    (async () => {
+      document.getElementById('code').textContent = 'Fetching...'
+      const gh = await fetch('https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}')
+      if (gh.ok) document.getElementById('code').textContent = await gh.text();
+      else document.getElementById('code').textContent = 'Response from GitHub not ok: ' + gh.status;
+    })()
+  </script>
 </div>`))
 }
 
