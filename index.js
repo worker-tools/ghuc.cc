@@ -35,7 +35,7 @@ const layout = (title, content) => html`<html>
     <div style="display:flex;justify-content:space-between">
       <div>
         Build:
-        <span class="muted">${(self.GITHUB_SHA || 'x-x-x-x-x').substring(0, 7)}</span>
+        <span class="muted">${(self.GITHUB_SHA || '123456789').substring(0, 7)}</span>
       </div>
       <div> 
         <!-- <a href="mailto:ghuc@workers.tools">Contact</a> -->
@@ -56,7 +56,7 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
       📦 ${new URL(new URL(url).pathname, 'https://ghuc.cc')}<br/>
       ➡️ <span class="muted">https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}</span>
     </div>
-    <div>
+    <div class="muted">
       <a href="https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}">Raw</a>
       |
       <a href="https://github.com/${user}/${repo}/blob/${branchOrTag}/${path}">Repository</a>
@@ -82,7 +82,7 @@ export const mkInfo = (response) => {
       <ul>
         <li><a href="/worker-tools/router/index.ts">${new URL('/worker-tools/router/index.ts', 'https://ghuc.cc')}</a></li>
         <li><a href="/worker-tools/middleware@0.1.0-pre.10/index.ts">${new URL('/worker-tools/middleware@0.1.0-pre.10/index.ts', 'https://ghuc.cc')}</a></li>
-        <li><a href="/worker-toolsettps://github.com/qwtel/idb-key-to-string/blob/master/index.ts/ghuc.cc/index.ts">${new URL('/qwtel/typed-array-utils@0.2.2/index.ts', 'https://ghuc.cc')}</a></li>
+        <li><a href="/kenchris/urlpattern-polyfill@a076337/src/index.d.ts">${new URL('/kenchris/urlpattern-polyfill@a076337/src/index.d.ts', 'https://ghuc.cc')}</a></li>
       </ul>
 
     </div>`), response)
