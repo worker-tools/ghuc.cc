@@ -67,6 +67,7 @@ export const mkInfo = () => {
       <ul>
         <li><a href="/worker-tools/router/index.ts">${new URL('/worker-tools/router/index.ts', 'https://ghuc.cc')}</a></li>
         <li><a href="/worker-tools/middleware@0.1.0-pre.10/index.ts">${new URL('/worker-tools/middleware@0.1.0-pre.10/index.ts', 'https://ghuc.cc')}</a></li>
+        <li><a href="/qwtel/typed-array-utils@0.2.2/index.ts">${new URL('/qwtel/typed-array-utils@0.2.2/index.ts', 'https://ghuc.cc')}</a></li>
       </ul>
 
     </div>`))
@@ -91,7 +92,9 @@ const ghAPI = href => {
 
 const getBranchOrTag = async ({ user, repo, version }, { waitUntil }) => {
   if (version) {
-    return version.match(/^\d+\.\d+\.\d+/) ? `v${version}` : version;
+    return version.match(/^\d+\.\d+\.\d+/) 
+      ? version.endsWith('!') ? version.substring(0, version.length - 1) : `v${version}` 
+      : version;
   } else {
     let defaultBranch = await defaultBranchStorage.get([user, repo])
     if (!defaultBranch) {
