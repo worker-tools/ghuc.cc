@@ -14,6 +14,10 @@ kv_namespaces = [
   { binding = "KV_NAMESPACE", id = "febc7afc2ae9419eb7d8612d71b9e143", preview_id = "0abdd2a3299247039df88ec25885d96c" }
 ]
 
+[site]
+  bucket = "./_public"
+  entry-point = "."
+
 [vars]
   CF_STORAGE_AREA__DEFAULT_KV_NAMESPACE = "KV_NAMESPACE"
 
