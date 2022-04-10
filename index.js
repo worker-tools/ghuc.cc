@@ -91,7 +91,7 @@ const ghAPI = href => {
 
 const getBranchOrTag = async ({ user, repo, version }, { waitUntil }) => {
   if (version) {
-    return version.match(/^\d+\.\d+\.\d+.*[^!]$/) ? `v${version}` : version.replace(/!$/, '');
+    return version.match(/^\d+\.\d+\.\d+/) ? `v${version}` : version;
   } else {
     let defaultBranch = await defaultBranchStorage.get([user, repo])
     if (!defaultBranch) {
