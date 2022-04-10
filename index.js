@@ -32,8 +32,16 @@ const layout = (title, content) => html`<html>
   </main>
   <footer style="width:800px;margin:auto">
     <hr/>
-    <!-- <a href="mailto:ghuc@workers.tools">Contact</a> -->
-    <a href="https://github.com/worker-tools/ghuc.cc">GitHub</a>
+    <div style="display:flex;justify-content:space-between">
+      <div>
+        Build:
+        <span class="muted">${(self.GITHUB_SHA || 'x-x-x-x-x').substring(0, 7)}</span>
+      </div>
+      <div> 
+        <!-- <a href="mailto:ghuc@workers.tools">Contact</a> -->
+        <a href="https://github.com/worker-tools/ghuc.cc">GitHub</a>
+      </div>
+    </div>
   </footer>
 </body>
 
@@ -51,7 +59,7 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
     <div>
       <a href="https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}">Raw</a>
       |
-      <a href="https://github.com/${user}/${repo}">Repository</a>
+      <a href="https://github.com/${user}/${repo}/blob/${branchOrTag}/${path}">Repository</a>
     </div>
   </div>
   <hr />
@@ -74,7 +82,7 @@ export const mkInfo = (response) => {
       <ul>
         <li><a href="/worker-tools/router/index.ts">${new URL('/worker-tools/router/index.ts', 'https://ghuc.cc')}</a></li>
         <li><a href="/worker-tools/middleware@0.1.0-pre.10/index.ts">${new URL('/worker-tools/middleware@0.1.0-pre.10/index.ts', 'https://ghuc.cc')}</a></li>
-        <li><a href="/qwtel/typed-array-utils@0.2.2/index.ts">${new URL('/qwtel/typed-array-utils@0.2.2/index.ts', 'https://ghuc.cc')}</a></li>
+        <li><a href="/worker-toolsettps://github.com/qwtel/idb-key-to-string/blob/master/index.ts/ghuc.cc/index.ts">${new URL('/qwtel/typed-array-utils@0.2.2/index.ts', 'https://ghuc.cc')}</a></li>
       </ul>
 
     </div>`), response)
