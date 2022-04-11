@@ -138,14 +138,16 @@ const handlePrefix = prefix => request => {
   return new Request(url, defaultAssetKey)
 }
 
+const mw = provides(['text/html', '*/*']);
+
 const assetsRouter = new WorkerRouter()
   .get('*', (_, ctx) => getAssetFromKV(ctx.event, { mapRequestToAsset: handlePrefix('/_public') }))
-  .recover('*', provides(['text/html', '*/*']), (_, { type, response }) => {
+  .recover('*', mw, (_, { type, response }) => {
     if (type === 'text/html') return mkError(response)
     return response;
   })
 
-const router = new WorkerRouter(provides(['text/html', '*/*']), { debug: self.DEBUG })
+const router = new WorkerRouter(mw)
   .get('/favicon.ico', () => ok()) // TODO
   .use('/_public/*', assetsRouter)
   .get('/:handle/:repo(@?[^@]+){@:version([^/]+)}?/:path(.*)', async (request, { match, type, waitUntil }) => {
@@ -165,7 +167,7 @@ const router = new WorkerRouter(provides(['text/html', '*/*']), { debug: self.DE
     if (type === 'text/html') return mkInfo(badRequest())
     return badRequest("Needs to match pattern '/:user/:repo{\@:version}?/:path(.*)'")
   })
-  .recover('*', provides(['text/html', '*/*']), (_, { type, error, response }) => {
+  .recover('*', mw, (_, { type, error, response }) => {
     if (type === 'text/html') return mkError(response, error)
     return response;
   })
