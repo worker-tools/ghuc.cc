@@ -5,9 +5,9 @@ specifiers:
   '@cloudflare/workers-types': ^3.4.0
   '@worker-tools/cloudflare-kv-storage': ^0.8.0
   '@worker-tools/html': ^2.0.0-pre.6
-  '@worker-tools/middleware': ^0.1.0-pre.11
+  '@worker-tools/middleware': ^0.1.0-pre.13
   '@worker-tools/response-creators': ^1.2.0-pre.3
-  '@worker-tools/router': ^0.1.0-pre.14
+  '@worker-tools/router': ^0.2.0-pre.4
   esbuild: ^0.14.34
   miniflare: ^2.4.0
   urlpattern-polyfill: ^4.0.3
@@ -16,9 +16,9 @@ dependencies:
   '@cloudflare/kv-asset-handler': 0.2.0
   '@worker-tools/cloudflare-kv-storage': 0.8.0
   '@worker-tools/html': 2.0.0-pre.6
-  '@worker-tools/middleware': 0.1.0-pre.11
+  '@worker-tools/middleware': 0.1.0-pre.13
   '@worker-tools/response-creators': 1.2.0-pre.3
-  '@worker-tools/router': 0.1.0-pre.14
+  '@worker-tools/router': 0.2.0-pre.4
   urlpattern-polyfill: 4.0.3
 
 devDependencies:
@@ -229,8 +229,8 @@ packages:
       whatwg-stream-to-async-iter: 0.4.3
     dev: false
 
-  /@worker-tools/middleware/0.1.0-pre.11:
-    resolution: {integrity: sha512-anWVutpMjW+17h4VJvIURi+4ZtWa1g51KvA4hYlLizMb0r4l9K4FqWduD657n4So2Dt5GgY4oijZIeZBwqLmKA==}
+  /@worker-tools/middleware/0.1.0-pre.13:
+    resolution: {integrity: sha512-W8bDr3WPphyzWaNehM4h5Y2CjO5wU1SYxOLVxiiX9kVKdhkHhua5Y2222dI4PJ6I7kq40EI+fBjHd7Xgcw21pA==}
     dependencies:
       '@worker-tools/encrypted-cookie-store': 0.3.0-pre.4
       '@worker-tools/extendable-promise': 0.2.0-pre.6
@@ -261,10 +261,10 @@ packages:
     resolution: {integrity: sha512-ypKSfu35HU7tb9LmiqA23hNVp892HZ6yLqBnOs+uMABUba+Z3OCTsXlPON73zaC+ubVuI+TRoU7ofDxlmeyC4A==}
     dev: false
 
-  /@worker-tools/router/0.1.0-pre.14:
-    resolution: {integrity: sha512-sXYHHp+AC27PYTVNkK91uA0s7BHtfUOXlpq9JPU1RxmBQSTqXA03VgmbjRDhGoVZp8467cdlHmF6QDMFudb/Tw==}
+  /@worker-tools/router/0.2.0-pre.4:
+    resolution: {integrity: sha512-uJ41OWfgVRoQ8F2zl7WMkW4ThagXAt9anZ7cEholO+5gGTXMaBRyWMs/7jV4cWvkIZIZCvCVJAPiD5jH3uyW2Q==}
     dependencies:
-      '@worker-tools/middleware': 0.1.0-pre.11
+      '@worker-tools/middleware': 0.1.0-pre.13
       '@worker-tools/response-creators': 1.2.0-pre.3
       urlpattern-polyfill: 4.0.3
     dev: false

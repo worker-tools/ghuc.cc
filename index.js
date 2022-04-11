@@ -139,13 +139,14 @@ const handlePrefix = prefix => request => {
 }
 
 const assetsRouter = new WorkerRouter()
-  .get('*', (req, ctx) => getAssetFromKV(ctx.event, { mapRequestToAsset: handlePrefix('/_public') }))
-  .recover('*', provides(['text/html', '*/*']), (req, { type, error, response }) => {
-    if (type === 'text/html') return mkError(response, error)
+  .get('*', (_, ctx) => getAssetFromKV(ctx.event, { mapRequestToAsset: handlePrefix('/_public') }))
+  .recover('*', provides(['text/html', '*/*']), (_, { type, response }) => {
+    if (type === 'text/html') return mkError(response)
     return response;
   })
 
 const router = new WorkerRouter(provides(['text/html', '*/*']), { debug: self.DEBUG })
+  .get('/favicon.ico', () => ok()) // TODO
   .use('/_public/*', assetsRouter)
   .get('/:handle/:repo(@?[^@]+){@:version([^/]+)}?/:path(.*)', async (request, { match, type, waitUntil }) => {
     const { pathname: { groups: { handle, repo, version, path } } } = match;
@@ -156,16 +157,15 @@ const router = new WorkerRouter(provides(['text/html', '*/*']), { debug: self.DE
     if (type === 'text/html') return mkPage({ user, repo, branchOrTag, path }, request.url)
     return temporaryRedirect(`https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}`);
   })
-  .get('/favicon.ico', () => ok()) // TODO
-  .get('/', (req, { type }) => {
+  .get('/', (_, { type }) => {
     if (type === 'text/html') return mkInfo()
     return ok("Needs to match pattern '/:user/:repo{\@:version}?/:path(.*)'")
   })
-  .any('*', (req, { type }) => {
+  .any('*', (_, { type }) => {
     if (type === 'text/html') return mkInfo(badRequest())
     return badRequest("Needs to match pattern '/:user/:repo{\@:version}?/:path(.*)'")
   })
-  .recover('*', provides(['text/html', '*/*']), (req, { type, error, response }) => {
+  .recover('*', provides(['text/html', '*/*']), (_, { type, error, response }) => {
     if (type === 'text/html') return mkError(response, error)
     return response;
   })
