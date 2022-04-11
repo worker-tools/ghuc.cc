@@ -95,17 +95,19 @@ export const mkError = (response, error) => {
     </div>`), response)
 }
 
-const ghAPI = href => {
-  console.log(new URL(href, 'https://api.github.com').href)
+const ghAPI = (href, originalRequest) => {
   return fetch(new URL(href, 'https://api.github.com').href, {
     headers: { 
       'Accept': 'application/vnd.github.v3+json', 
       'User-Agent': navigator.userAgent, 
+      ...originalRequest.headers.has('authorization') 
+        ? { 'Authorization': originalRequest.headers.get('authorization') } 
+        : {}
     },
   })
 }
 
-const getBranchOrTag = async ({ user, repo, version }, { waitUntil }) => {
+const getBranchOrTag = async ({ user, repo, version }, { request, waitUntil }) => {
   if (version) {
     return version.match(/^\d+\.\d+\.\d+/) 
       ? version.endsWith('!') ? version.substring(0, version.length - 1) : `v${version}` 
@@ -113,7 +115,7 @@ const getBranchOrTag = async ({ user, repo, version }, { waitUntil }) => {
   } else {
     let defaultBranch = await defaultBranchStorage.get([user, repo])
     if (!defaultBranch) {
-      const gh = await ghAPI(`/repos/${user}/${repo}`)
+      const gh = await ghAPI(`/repos/${user}/${repo}`, request)
       if (!gh.ok) throw Error(`Response from GitHub not ok: ${gh.status}`)
       defaultBranch = (await gh.json()).default_branch;
       waitUntil(defaultBranchStorage.set([user, repo], defaultBranch, { expirationTtl: 60 * 60 * 24 * 30 }))
@@ -143,14 +145,13 @@ const assetsRouter = new WorkerRouter()
 
 const router = new WorkerRouter(provides(['text/html', '*/*']), { debug: self.DEBUG })
   .use('/_public/*', assetsRouter)
-  .get('/:handle/:repo(@?[^@]+){@:version([^/]+)}?/:path(.*)', async (req, { match, type, waitUntil }) => {
+  .get('/:handle/:repo(@?[^@]+){@:version([^/]+)}?/:path(.*)', async (request, { match, type, waitUntil }) => {
     const { pathname: { groups: { handle, repo, version, path } } } = match;
-    // console.log({ user, repo, version, path })
 
     const user = handle.startsWith('@') ? handle.substring(1) : handle
-    const branchOrTag = await getBranchOrTag({ user, repo, version }, { waitUntil })
+    const branchOrTag = await getBranchOrTag({ user, repo, version }, { request, waitUntil })
 
-    if (type === 'text/html') return mkPage({ user, repo, branchOrTag, path }, req.url)
+    if (type === 'text/html') return mkPage({ user, repo, branchOrTag, path }, request.url)
     return temporaryRedirect(`https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}`);
   })
   .get('/favicon.ico', () => ok()) // TODO
