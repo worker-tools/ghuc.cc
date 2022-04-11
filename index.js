@@ -2,7 +2,7 @@ import 'urlpattern-polyfill';
 
 import { ok, badRequest, temporaryRedirect } from '@worker-tools/response-creators';
 import { WorkerRouter } from '@worker-tools/router';
-import { provides, createMiddleware, combine } from '@worker-tools/middleware';
+import { provides } from '@worker-tools/middleware';
 import { StorageArea } from '@worker-tools/cloudflare-kv-storage';
 import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler'
 
@@ -37,9 +37,11 @@ const layout = (title, content) => html`<html>
         Build:
         <span class="muted">${(self.GITHUB_SHA || '123456789').substring(0, 7)}</span>
       </div>
-      <div> 
-        <!-- <a href="mailto:ghuc@workers.tools">Contact</a> -->
+      <div class="muted"> 
+        <a href="/">Home</a>
+        |
         <a href="https://github.com/worker-tools/ghuc.cc">GitHub</a>
+        <!-- <a href="mailto:ghuc@workers.tools">Contact</a> -->
       </div>
     </div>
   </footer>
