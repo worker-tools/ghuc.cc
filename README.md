@@ -1,5 +1,5 @@
 # ghuc.cc
-Your friendly neighborhood redirection service for **Deno** 🦕 to import code _directly from GitHub_.
+Your friendly neighborhood redirection service for **Deno** 🦕 to import code directly from GitHub.
 
 > ghuc.cc = GitHub User Content Carbon Copy
 
