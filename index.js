@@ -68,10 +68,13 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
   <pre><code id="code"><noscript>JS required to load remote content.</noscript></code></pre>
   <script>
     (async () => {
-      document.getElementById('code').textContent = 'Fetching...'
+      const codeEl = document.getElementById('code');
+      codeEl.textContent = 'Fetching...'
       const gh = await fetch('https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}')
-      if (gh.ok) document.getElementById('code').textContent = await gh.text();
-      else document.getElementById('code').textContent = 'Response from GitHub not ok: ' + gh.status;
+      if (gh.ok)
+        if ((gh.headers.get('content-type') || '').startsWith('text/')) codeEl.textContent = await gh.text();
+        else codeEl.textContent = 'Non-textual content hidden';
+      else codeEl.textContent = 'Response from GitHub not ok: ' + gh.status;
     })()
   </script>
 </div>`))
