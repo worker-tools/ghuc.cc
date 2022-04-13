@@ -106,8 +106,9 @@ const ghAPI = (href, originalRequest) => {
       'Accept': 'application/vnd.github.v3+json', 
       'User-Agent': navigator.userAgent, 
       ...originalRequest.headers.has('authorization') 
-        ? { 'Authorization': originalRequest.headers.get('authorization') } 
-        : {}
+        ? { 'Authorization': originalRequest.headers.get('authorization') } : {},
+      // ...etag 
+      //   ? { 'If-None-Match': etag } : {},
     },
   })
 }
