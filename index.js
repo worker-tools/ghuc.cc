@@ -1,10 +1,11 @@
 import 'urlpattern-polyfill';
 
-import { ok, badRequest, temporaryRedirect } from '@worker-tools/response-creators';
+import { ok, badRequest, temporaryRedirect, forbidden } from '@worker-tools/response-creators';
 import { WorkerRouter } from '@worker-tools/router';
 import { provides } from '@worker-tools/middleware';
 import { StorageArea } from '@worker-tools/cloudflare-kv-storage';
 import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler'
+import { dedent } from 'ts-dedent'
 
 import { html, HTMLResponse } from '@worker-tools/html';
 
@@ -111,8 +112,6 @@ const ghAPI = (href, request) => {
       'User-Agent': navigator.userAgent, 
       ...request.headers.has('authorization') 
         ? { 'Authorization': request.headers.get('authorization') } : {},
-      // ...etag 
-      //   ? { 'If-None-Match': etag } : {},
     },
   })
 }
@@ -121,14 +120,29 @@ const fetchHEAD = (href, request) => {
   return fetch(href, { 
     method: 'HEAD',
     headers: {
-      // FIXME: not sure this endpoint even accepts gh tokens...
       ...request.headers.has('authorization') 
         ? { 'Authorization': request.headers.get('authorization') } : {},
     }
   });
 }
 
-async function getBranchOrTag({ user, repo, version }, { request, waitUntil }) {
+async function inferDefaultBranch({ user, repo, maybePath }, { request }) {
+  // In case there's also no path we use .gitignore as a last resort to test for a file that is likely to be present.
+  const path = maybePath && !maybePath.endsWith('/') ? maybePath : '.gitignore' 
+
+  for (const maybeBranch of ['master', 'main']) {
+    const res = await fetchHEAD(mkGHUC_href({ user, repo, branchOrTag: maybeBranch, path }), request);
+    if (res.ok) return maybeBranch
+  }
+
+  throw forbidden(dedent`ghuc.cc reached GitHub API's rate limit and cannot infer the default branch via heuristics. 
+    You can provide the default branch via @ specifier after the repository name, or
+    you can draw from your own rate limit by providing a 'Authorization' headers with a GitHub personal access token. 
+    In Deno this is achieved via the DENO_AUTH_TOKENS environment variable.
+    For more, see: https://deno.land/manual/linking_to_external_code/private#deno_auth_tokens`)
+}
+
+async function getBranchOrTag({ user, repo, version, maybePath }, { request, waitUntil }) {
   if (version) {
     return version.match(/^\d+\.\d+\.\d+/) 
       ? version.endsWith('!') ? version.substring(0, version.length - 1) : `v${version}` 
@@ -137,8 +151,15 @@ async function getBranchOrTag({ user, repo, version }, { request, waitUntil }) {
     let defaultBranch = await defaultBranchStorage.get([user, repo])
     if (!defaultBranch) {
       const gh = await ghAPI(`/repos/${user}/${repo}`, request)
-      if (!gh.ok) throw badRequest(`Response from GitHub not ok: ${gh.status}`)
-      defaultBranch = (await gh.json()).default_branch;
+      if (gh.ok) {
+        defaultBranch = (await gh.json()).default_branch;
+      } else {
+        if (gh.status === 403 && gh.headers.get('x-ratelimit-remaining') === '0') {
+          defaultBranch = await inferDefaultBranch({ user, repo, maybePath }, { request })
+        } else {
+          throw new Response(`Response from GitHub not ok: ${gh.status}`, gh)
+        }
+      }
       waitUntil(defaultBranchStorage.set([user, repo], defaultBranch, { expirationTtl: 60 * 60 * 24 * 30 * 3 }))
     }
     return defaultBranch;
@@ -192,7 +213,7 @@ const router = new WorkerRouter(mw)
     const { pathname: { groups: { handle, repo, version, path: maybePath } } } = match;
 
     const user = handle.startsWith('@') ? handle.substring(1) : handle
-    const branchOrTag = await getBranchOrTag({ user, repo, version }, { request, waitUntil })
+    const branchOrTag = await getBranchOrTag({ user, repo, version, maybePath }, { request, waitUntil })
     const path = await getPath({ user, repo, branchOrTag, maybePath }, { request, waitUntil })
 
     if (type === 'text/html') return mkPage({ user, repo, branchOrTag, path }, request.url)

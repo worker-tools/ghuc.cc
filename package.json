@@ -15,6 +15,7 @@
     "@worker-tools/middleware": "^0.1.0-pre.13",
     "@worker-tools/response-creators": "^1.2.0-pre.3",
     "@worker-tools/router": "^0.2.0-pre.4",
+    "ts-dedent": "^2.2.0",
     "urlpattern-polyfill": "^4.0.3"
   },
   "devDependencies": {

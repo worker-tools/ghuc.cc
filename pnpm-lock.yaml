@@ -10,6 +10,7 @@ specifiers:
   '@worker-tools/router': ^0.2.0-pre.4
   esbuild: ^0.14.34
   miniflare: ^2.4.0
+  ts-dedent: ^2.2.0
   urlpattern-polyfill: ^4.0.3
 
 dependencies:
@@ -19,6 +20,7 @@ dependencies:
   '@worker-tools/middleware': 0.1.0-pre.13
   '@worker-tools/response-creators': 1.2.0-pre.3
   '@worker-tools/router': 0.2.0-pre.4
+  ts-dedent: 2.2.0
   urlpattern-polyfill: 4.0.3
 
 devDependencies:
@@ -749,6 +751,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       punycode: 2.1.1
+    dev: false
+
+  /ts-dedent/2.2.0:
+    resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
+    engines: {node: '>=6.10'}
     dev: false
 
   /ts-functional-pipe/3.1.2:
