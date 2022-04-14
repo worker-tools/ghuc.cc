@@ -172,13 +172,14 @@ const stripLast = s => s.substring(0, s.length - 1)
 
 async function getPath({ user, repo, branchOrTag, maybePath }, { request, waitUntil }) {
   if (maybePath && !maybePath.endsWith('/')) return maybePath;
-  let path = await defaultPathStorage.get([user, repo, ...maybePath ? [stripLast(maybePath)] : []])
+  const storageKey = [user, repo, ...maybePath ? [stripLast(maybePath)] : []];
+  let path = await defaultPathStorage.get(storageKey)
   if (!path) {
     const dir = maybePath || '';
     for (path of ['index.ts', 'mod.ts', 'index.js', 'mod.js'].map(p => dir + p)) {
       const res = await fetchHEAD(mkGHUC_href({ user, repo, branchOrTag, path }), request);
       if (res.ok) {
-        waitUntil(defaultPathStorage.set([user, repo], path, { expirationTtl: 60 * 60 * 24 * 30 * 3 }))
+        waitUntil(defaultPathStorage.set(storageKey, path, { expirationTtl: 60 * 60 * 24 * 30 * 3 }))
         return path
       }
     }
