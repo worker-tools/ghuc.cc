@@ -145,11 +145,14 @@ async function getBranchOrTag({ user, repo, version }, { request, waitUntil }) {
   }
 }
 
+const stripLast = s => s.substring(0, s.length - 1)
+
 async function getPath({ user, repo, branchOrTag, maybePath }, { request, waitUntil }) {
-  if (maybePath) return maybePath;
-  let path = await defaultPathStorage.get([user, repo])
+  if (maybePath && !maybePath.endsWith('/')) return maybePath;
+  let path = await defaultPathStorage.get([user, repo, ...maybePath ? [stripLast(maybePath)] : []])
   if (!path) {
-    for (path of ['index.ts', 'mod.ts', 'index.js', 'mod.js']) {
+    const dir = maybePath || '';
+    for (path of ['index.ts', 'mod.ts', 'index.js', 'mod.js'].map(p => dir + p)) {
       const res = await fetchHEAD(mkGHUC_href({ user, repo, branchOrTag, path }), request);
       if (res.ok) {
         waitUntil(defaultPathStorage.set([user, repo], path, { expirationTtl: 60 * 60 * 24 * 30 * 3 }))
