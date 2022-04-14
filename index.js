@@ -11,6 +11,7 @@ import { html, HTMLResponse } from '@worker-tools/html';
 const navigator = self.navigator || { userAgent: 'Cloudflare Workers' }
 
 const defaultBranchStorage = new StorageArea('default-branches');
+const defaultPathStorage = new StorageArea('default-path');
 
 const layout = (title, content) => html`<html>
 
@@ -49,6 +50,9 @@ const layout = (title, content) => html`<html>
 
 </html>`
 
+const mkGHUC_href = ({ user, repo, branchOrTag, path }) => 
+  `https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}`
+
 export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
   return new HTMLResponse(layout('ghuc.cc', html`<div>
   <!-- <code>import * as ${user.replaceAll('-', '_') + '__' + repo.replaceAll('-', '_')} from '<a href="${url}">${new URL(new URL(url).pathname, 'https://ghuc.cc')}</a>'</code><br><br> -->
@@ -56,10 +60,10 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
   <div style="display:flex; justify-content:space-between">
     <div>
       📦 ${new URL(new URL(url).pathname, 'https://ghuc.cc')}<br/>
-      ➡️ <span class="muted">https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}</span>
+      ➡️ <span class="muted">${mkGHUC_href({ user, repo, branchOrTag, path })}</span>
     </div>
     <div class="muted">
-      <a href="https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}">Raw</a>
+      <a href="${mkGHUC_href({ user, repo, branchOrTag, path })}">Raw</a>
       |
       <a href="https://github.com/${user}/${repo}/blob/${branchOrTag}/${path}">Repository</a>
     </div>
@@ -70,7 +74,7 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
     (async () => {
       const codeEl = document.getElementById('code');
       codeEl.textContent = 'Fetching...'
-      const gh = await fetch('https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}')
+      const gh = await fetch('${mkGHUC_href({ user, repo, branchOrTag, path })}')
       if (gh.ok)
         if ((gh.headers.get('content-type') || '').startsWith('text/')) codeEl.textContent = await gh.text();
         else codeEl.textContent = 'Non-textual content hidden';
@@ -93,27 +97,38 @@ export const mkInfo = (response) => {
     </div>`), response)
 }
 
-export const mkError = (response, error) => {
+export const mkError = (response) => {
   return new HTMLResponse(layout('ghuc.cc',
     html`<div>
-      Something went wrong: <code>${error && error.message || response.statusText}</code>.
+      Something went wrong: <code>${response.text().then(x => `${response.status}: ${x}`)}</code>.
     </div>`), response)
 }
 
-const ghAPI = (href, originalRequest) => {
+const ghAPI = (href, request) => {
   return fetch(new URL(href, 'https://api.github.com').href, {
     headers: { 
       'Accept': 'application/vnd.github.v3+json', 
       'User-Agent': navigator.userAgent, 
-      ...originalRequest.headers.has('authorization') 
-        ? { 'Authorization': originalRequest.headers.get('authorization') } : {},
+      ...request.headers.has('authorization') 
+        ? { 'Authorization': request.headers.get('authorization') } : {},
       // ...etag 
       //   ? { 'If-None-Match': etag } : {},
     },
   })
 }
 
-const getBranchOrTag = async ({ user, repo, version }, { request, waitUntil }) => {
+const fetchHEAD = (href, request) => {
+  return fetch(href, { 
+    method: 'HEAD',
+    headers: {
+      // FIXME: not sure this endpoint even accepts gh tokens...
+      ...request.headers.has('authorization') 
+        ? { 'Authorization': request.headers.get('authorization') } : {},
+    }
+  });
+}
+
+async function getBranchOrTag({ user, repo, version }, { request, waitUntil }) {
   if (version) {
     return version.match(/^\d+\.\d+\.\d+/) 
       ? version.endsWith('!') ? version.substring(0, version.length - 1) : `v${version}` 
@@ -122,12 +137,28 @@ const getBranchOrTag = async ({ user, repo, version }, { request, waitUntil }) =
     let defaultBranch = await defaultBranchStorage.get([user, repo])
     if (!defaultBranch) {
       const gh = await ghAPI(`/repos/${user}/${repo}`, request)
-      if (!gh.ok) throw Error(`Response from GitHub not ok: ${gh.status}`)
+      if (!gh.ok) throw badRequest(`Response from GitHub not ok: ${gh.status}`)
       defaultBranch = (await gh.json()).default_branch;
-      waitUntil(defaultBranchStorage.set([user, repo], defaultBranch, { expirationTtl: 60 * 60 * 24 * 30 }))
+      waitUntil(defaultBranchStorage.set([user, repo], defaultBranch, { expirationTtl: 60 * 60 * 24 * 30 * 3 }))
     }
     return defaultBranch;
   }
+}
+
+async function getPath({ user, repo, branchOrTag, maybePath }, { request, waitUntil }) {
+  if (maybePath) return maybePath;
+  let path = await defaultPathStorage.get([user, repo])
+  if (!path) {
+    for (path of ['index.ts', 'mod.ts', 'index.js', 'mod.js']) {
+      const res = await fetchHEAD(mkGHUC_href({ user, repo, branchOrTag, path }), request);
+      if (res.ok) {
+        waitUntil(defaultPathStorage.set([user, repo], path, { expirationTtl: 60 * 60 * 24 * 30 * 3 }))
+        return path
+      }
+    }
+    throw badRequest('Couldn\'t determine file path. Provide a full path or ensure index.ts/mod.ts exists in the root')
+  }
+  return path;
 }
 
 const handlePrefix = prefix => request => {
@@ -154,14 +185,15 @@ const assetsRouter = new WorkerRouter()
 const router = new WorkerRouter(mw)
   .get('/favicon.ico', () => ok()) // TODO
   .use('/_public/*', assetsRouter)
-  .get('/:handle/:repo(@?[^@]+){@:version([^/]+)}?/:path(.*)', async (request, { match, type, waitUntil }) => {
-    const { pathname: { groups: { handle, repo, version, path } } } = match;
+  .get('/:handle/:repo(@?[^@/]+){@:version([^/]+)}?{/:path(.*)}?', async (request, { match, type, waitUntil }) => {
+    const { pathname: { groups: { handle, repo, version, path: maybePath } } } = match;
 
     const user = handle.startsWith('@') ? handle.substring(1) : handle
     const branchOrTag = await getBranchOrTag({ user, repo, version }, { request, waitUntil })
+    const path = await getPath({ user, repo, branchOrTag, maybePath }, { request, waitUntil })
 
     if (type === 'text/html') return mkPage({ user, repo, branchOrTag, path }, request.url)
-    return temporaryRedirect(`https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}`);
+    return temporaryRedirect(mkGHUC_href({ user, repo, branchOrTag, path }));
   })
   .get('/', (_, { type }) => {
     if (type === 'text/html') return mkInfo()
@@ -171,8 +203,8 @@ const router = new WorkerRouter(mw)
     if (type === 'text/html') return mkInfo(badRequest())
     return badRequest("Needs to match pattern '/:user/:repo{\@:version}?/:path(.*)'")
   })
-  .recover('*', mw, (_, { type, error, response }) => {
-    if (type === 'text/html') return mkError(response, error)
+  .recover('*', mw, (_, { type, response }) => {
+    if (type === 'text/html') return mkError(response)
     return response;
   })
 

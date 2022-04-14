@@ -17,8 +17,7 @@ You can also leave out the version suffix, in which case GHUC.cc will redirect t
 
 <https://ghuc.cc/worker-tools/router/index.ts>
 
-Note that you cannot leave out the path. In the spirit of Deno's module resolution philsophy, 
-ghuc expect a full path and file extension.
+***
 
 Ghuc.cc was developer for and with [Worker Tools](https://workers.tools).
 
