@@ -56,8 +56,6 @@ const mkGHUC_href = ({ user, repo, branchOrTag, path }) =>
 
 export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
   return new HTMLResponse(layout('ghuc.cc', html`<div>
-  <!-- <code>import * as ${user.replaceAll('-', '_') + '__' + repo.replaceAll('-', '_')} from '<a href="${url}">${new URL(new URL(url).pathname, 'https://ghuc.cc')}</a>'</code><br><br> -->
-  <!-- <code>import {} from '<a href="${url}">${new URL(new URL(url).pathname, 'https://ghuc.cc')}</a>'</code><br><br> -->
   <div style="display:flex; justify-content:space-between">
     <div>
       📦 ${new URL(new URL(url).pathname, 'https://ghuc.cc')}<br/>

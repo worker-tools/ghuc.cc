@@ -51,8 +51,19 @@ body {
   font-family: var(--font-family);
   color: var(--color);
   background-color: var(--background);
+  overflow-x: hidden;
 }
 
+pre {
+  overflow: scroll;
+}
+@media screen and (min-width:800px) {
+  pre {
+    width: calc(800px + (100vw - 800px));
+    margin-left: calc((100vw - 800px) / -2);
+    padding-left: calc((100vw - 800px) / 2); 
+  }
+}
 pre,
 code {
   font-family: var(--font-family-mono);
