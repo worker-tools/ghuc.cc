@@ -77,7 +77,9 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
       codeEl.textContent = 'Fetching...'
       const gh = await fetch('${mkGHUC_href({ user, repo, branchOrTag, path })}')
       if (gh.ok)
-        if ((gh.headers.get('content-type') || '').startsWith('text/')) codeEl.textContent = await gh.text();
+        if ((gh.headers.get('content-type') || '').startsWith('text/'))
+          if (Number(gh.headers.get('content-length')) <= 524_288) codeEl.textContent = await gh.text();
+          else codeEl.textContent = 'Large file content hidden';
         else codeEl.textContent = 'Non-textual content hidden';
       else codeEl.textContent = 'Response from GitHub not ok: ' + gh.status;
     })()
