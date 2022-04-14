@@ -27,7 +27,7 @@ const layout = (title, content) => html`<html>
   <main style="width:800px;margin:auto">
     <h1>GHUC.CC</h1>
     <span>ghuc.cc = GitHub User Content Carbon Copy<br>
-      Your friendly neighborhood redirection service for <strong>Deno 🦕</strong> to import code directly from GitHub>.</span>
+      Your friendly neighborhood redirection service for <strong>Deno 🦕</strong> to import code directly from GitHub.</span>
     <br />
     <br />
     ${content}
@@ -124,6 +124,7 @@ const fetchHEAD = (href, request) => {
   return fetch(href, { 
     method: 'HEAD',
     headers: {
+      'User-Agent': navigator.userAgent, 
       ...request.headers.has('authorization') 
         ? { 'Authorization': request.headers.get('authorization') } : {},
     }
