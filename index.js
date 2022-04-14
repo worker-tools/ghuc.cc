@@ -1,6 +1,6 @@
 import 'urlpattern-polyfill';
 
-import { ok, badRequest, permanentRedirect, forbidden } from '@worker-tools/response-creators';
+import { ok, badRequest, temporaryRedirect, forbidden } from '@worker-tools/response-creators';
 import { WorkerRouter } from '@worker-tools/router';
 import { provides } from '@worker-tools/middleware';
 import { StorageArea } from '@worker-tools/cloudflare-kv-storage';
@@ -223,7 +223,7 @@ const router = new WorkerRouter(mw)
     const path = await getPath({ user, repo, branchOrTag, maybePath }, { request, waitUntil })
 
     if (type === 'text/html') return mkPage({ user, repo, branchOrTag, path }, request.url)
-    return permanentRedirect(mkGHUC_href({ user, repo, branchOrTag, path }));
+    return temporaryRedirect(mkGHUC_href({ user, repo, branchOrTag, path }));
   })
   .get('/', (_, { type }) => {
     if (type === 'text/html') return mkInfo()
