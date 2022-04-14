@@ -93,10 +93,9 @@ export const mkInfo = (response) => {
     html`<div>
       Needs to match pattern <code>/:user/:repo{\@:version}?{/:path(.*)}?</code>. Examples:
       <ul>
-        <li><a href="/worker-tools/router">${new URL('/worker-tools/router', 'https://ghuc.cc')}</a></li>
-        <li><a href="/worker-tools/middleware/index.ts">${new URL('/worker-tools/middleware/index.ts', 'https://ghuc.cc')}</a></li>
+        <li><a href="/worker-tools/router">${new URL('/worker-tools/router/index.ts', 'https://ghuc.cc')}</a></li>
         <li><a href="/worker-tools/html@2.0.0-pre.6/html-response.ts">${new URL('/worker-tools/html@2.0.0-pre.6/html-response.ts', 'https://ghuc.cc')}</a></li>
-        <li><a href="/worker-tools/ghuc.cc@${ghucV}">${new URL(`/worker-tools/ghuc.cc@${ghucV}`, 'https://ghuc.cc')}</a></li>
+        <li><a href="/worker-tools/ghuc.cc@${ghucV}/index.js">${new URL(`/worker-tools/ghuc.cc@${ghucV}/index.js`, 'https://ghuc.cc')}</a></li>
       </ul>
 
     </div>`), response)
