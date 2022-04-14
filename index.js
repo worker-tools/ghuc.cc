@@ -27,7 +27,7 @@ const layout = (title, content) => html`<html>
   <main style="width:800px;margin:auto">
     <h1>GHUC.CC</h1>
     <span>ghuc.cc = GitHub User Content Carbon Copy<br>
-      Your friendly neighborhood redirection service for <strong>Deno 🦕</strong> to import code <em>directly from GitHub</em>.</span>
+      Your friendly neighborhood redirection service for <strong>Deno 🦕</strong> to import code directly from GitHub>.</span>
     <br />
     <br />
     ${content}
@@ -88,13 +88,15 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
 }
 
 export const mkInfo = (response) => {
+  const ghucV = (self.GITHUB_SHA || '2c877da').substring(0, 7);
   return new HTMLResponse(layout('ghuc.cc',
     html`<div>
-      Needs to match pattern <code>/:user/:repo{\@:version}?/:path(.*)</code>. Examples:
+      Needs to match pattern <code>/:user/:repo{\@:version}?{/:path(.*)}?</code>. Examples:
       <ul>
-        <li><a href="/worker-tools/router/index.ts">${new URL('/worker-tools/router/index.ts', 'https://ghuc.cc')}</a></li>
-        <li><a href="/worker-tools/middleware@0.1.0-pre.10/index.ts">${new URL('/worker-tools/middleware@0.1.0-pre.10/index.ts', 'https://ghuc.cc')}</a></li>
-        <li><a href="/kenchris/urlpattern-polyfill@a076337/src/index.d.ts">${new URL('/kenchris/urlpattern-polyfill@a076337/src/index.d.ts', 'https://ghuc.cc')}</a></li>
+        <li><a href="/worker-tools/router">${new URL('/worker-tools/router', 'https://ghuc.cc')}</a></li>
+        <li><a href="/worker-tools/middleware/index.ts">${new URL('/worker-tools/middleware/index.ts', 'https://ghuc.cc')}</a></li>
+        <li><a href="/worker-tools/html@2.0.0-pre.6/index.ts">${new URL('/worker-tools/html@2.0.0-pre.6/index.ts', 'https://ghuc.cc')}</a></li>
+        <li><a href="/worker-tools/ghuc.cc@${ghucV}">${new URL(`/worker-tools/ghuc.cc@${ghucV}`, 'https://ghuc.cc')}</a></li>
       </ul>
 
     </div>`), response)
@@ -224,11 +226,11 @@ const router = new WorkerRouter(mw)
   })
   .get('/', (_, { type }) => {
     if (type === 'text/html') return mkInfo()
-    return ok("Needs to match pattern '/:user/:repo{\@:version}?/:path(.*)'")
+    return ok("Needs to match pattern '/:user/:repo{\@:version}?{/:path(.*)}?'")
   })
   .any('*', (_, { type }) => {
     if (type === 'text/html') return mkInfo(badRequest())
-    return badRequest("Needs to match pattern '/:user/:repo{\@:version}?/:path(.*)'")
+    return badRequest("Needs to match pattern '/:user/:repo{\@:version}?{/:path(.*)}?'")
   })
   .recover('*', mw, (_, { type, response }) => {
     if (type === 'text/html') return mkError(response)
