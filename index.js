@@ -54,7 +54,7 @@ const layout = (title, content) => html`<html>
 const mkGHUC_href = ({ user, repo, branchOrTag, path }) => 
   `https://raw.githubusercontent.com/${user}/${repo}/${branchOrTag}/${path}`
 
-export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
+const mkPage = ({ user, repo, branchOrTag, path }, url) => {
   return new HTMLResponse(layout('ghuc.cc', html`<div>
   <div style="display:flex; justify-content:space-between">
     <div>
@@ -85,7 +85,7 @@ export const mkPage = ({ user, repo, branchOrTag, path }, url) => {
 </div>`))
 }
 
-export const mkInfo = (response) => {
+const mkInfo = (response) => {
   const ghucV = (self.GITHUB_SHA || '2c877da').substring(0, 7);
   return new HTMLResponse(layout('ghuc.cc',
     html`<div>
@@ -99,7 +99,7 @@ export const mkInfo = (response) => {
     </div>`), response)
 }
 
-export const mkError = (response) => {
+const mkError = (response) => {
   return new HTMLResponse(layout('ghuc.cc',
     html`<div>
       Something went wrong: <code>${response.text().then(x => `${response.status}: ${x}`)}</code>.
