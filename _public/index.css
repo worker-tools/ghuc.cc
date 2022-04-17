@@ -1,6 +1,5 @@
 :root {
   color-scheme: dark light;
-  font-size: 14px;
 }
 
 * {
@@ -55,7 +54,7 @@ body {
 }
 
 pre {
-  overflow: scroll;
+  overflow-x: auto;
 }
 @media screen and (min-width:800px) {
   pre {
