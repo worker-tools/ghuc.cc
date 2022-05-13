@@ -1,15 +1,15 @@
-import 'urlpattern-polyfill';
+import 'urlpattern-polyfill'; // only for local dev
 
+import { html, HTMLResponse } from '@worker-tools/html';
 import { ok, badRequest, temporaryRedirect, forbidden } from '@worker-tools/response-creators';
 import { WorkerRouter } from '@worker-tools/router';
 import { provides } from '@worker-tools/middleware';
 import { StorageArea } from '@worker-tools/cloudflare-kv-storage';
-import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler'
 import { dedent } from 'ts-dedent'
 
-import { html, HTMLResponse } from '@worker-tools/html';
+import { stylesHandler } from './styles';
 
-const navigator = self.navigator || { userAgent: 'Cloudflare Workers' }
+const navigator = self.navigator || { userAgent: 'Cloudflare Workers' } // only for local dev
 
 const defaultBranchStorage = new StorageArea('default-branches');
 const defaultPathStorage = new StorageArea('default-path');
@@ -188,22 +188,10 @@ async function getPath({ user, repo, branchOrTag, maybePath }, { request, waitUn
   return path;
 }
 
-const handlePrefix = prefix => request => {
-  // compute the default (e.g. / -> index.html)
-  let defaultAssetKey = mapRequestToAsset(request)
-  let url = new URL(defaultAssetKey.url)
-
-  // strip the prefix from the path for lookup
-  url.pathname = url.pathname.replace(prefix, '/')
-
-  // inherit all other props from the default request
-  return new Request(url, defaultAssetKey)
-}
-
 const mw = provides(['text/html', '*/*']);
 
 const assetsRouter = new WorkerRouter()
-  .get('*', (_, ctx) => getAssetFromKV(ctx.event, { mapRequestToAsset: handlePrefix('/_public') }))
+  .get('/index.css', stylesHandler)
   .recover('*', mw, (_, { type, response }) => {
     if (type === 'text/html') return mkError(response)
     return response;
@@ -236,3 +224,4 @@ const router = new WorkerRouter(mw)
   })
 
 self.addEventListener('fetch', router);
+

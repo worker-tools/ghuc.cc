@@ -1,3 +1,7 @@
+import { HTMLResponse, css } from '@worker-tools/html';
+
+export function stylesHandler() { 
+  return new HTMLResponse(css`
 :root {
   color-scheme: dark light;
 }
@@ -73,10 +77,6 @@ a {
   color: var(--blue)
 }
 
-/* a:visited {
-  color: var(--purple)
-} */
-
 hr {
   border:none;
   border-bottom: 1px solid var(--gray2);
@@ -87,4 +87,6 @@ li { margin-bottom: 0.25rem; }
 
 .muted {
   color: var(--gray);
+}
+`, { headers: [['content-type', 'text/css']] });
 }
